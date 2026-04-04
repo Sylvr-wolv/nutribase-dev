@@ -39,7 +39,6 @@
                     </div>
                     <div>
                         <p class="font-bold text-gray-800 text-lg">{{ $user->name }}</p>
-                        <p class="text-sm text-gray-500">{{ $user->email ?? '-' }}</p>
                         <span class="inline-block mt-1 text-xs font-semibold px-2.5 py-1 rounded-full
                             @php
                                 echo match($user->role) {
@@ -113,10 +112,6 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
                         <input type="text" name="username"
                             value="{{ old('username', $user->username) }}"
-                            class="w-full bg-gray-100 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#79C80E]/50">
-
-                        <input type="email" name="email"
-                            value="{{ old('email', $user->email) }}"
                             class="w-full bg-gray-100 rounded-xl px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#79C80E]/50">
                     </div>
 

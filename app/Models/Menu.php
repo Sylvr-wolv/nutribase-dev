@@ -35,4 +35,9 @@ class Menu extends Model
     {
         return $this->hasMany(Distribusi::class, 'menu_id');
     }
+    
+    public function getNamaAttribute(): string
+    {
+        return $this->nama_menu ?? '';
+    }
 }

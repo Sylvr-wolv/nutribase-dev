@@ -15,7 +15,6 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Koordinator Utama',
                 'username' => 'koordinator',
-                'email' => 'koordinator@example.com',
                 'password' => Hash::make('password'),
                 'role' => 'koordinator',
                 'created_at' => now(),
@@ -26,7 +25,6 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Kader Satu',
                 'username' => 'kader1',
-                'email' => 'kader1@example.com',
                 'password' => Hash::make('password'),
                 'role' => 'kader',
                 'created_at' => now(),
@@ -35,7 +33,6 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Kader Dua',
                 'username' => 'kader2',
-                'email' => 'kader2@example.com',
                 'password' => Hash::make('password'),
                 'role' => 'kader',
                 'created_at' => now(),
@@ -46,7 +43,6 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Penerima Satu',
                 'username' => 'penerima1',
-                'email' => 'penerima1@example.com',
                 'password' => Hash::make('password'),
                 'role' => 'penerima',
                 'created_at' => now(),
@@ -55,7 +51,6 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Penerima Dua',
                 'username' => 'penerima2',
-                'email' => 'penerima2@example.com',
                 'password' => Hash::make('password'),
                 'role' => 'penerima',
                 'created_at' => now(),

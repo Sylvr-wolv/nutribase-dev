@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+
 
 class AuthController extends Controller
 {
@@ -13,12 +16,17 @@ class AuthController extends Controller
             return redirect()->route('dashboard');
         }
 
-        return view('public.homepage');
+        return view('public.beranda');
     }
 
     public function showLogin()
     {
         return view('login');
+    }
+    
+    public function showRegister()
+    {
+        return view('register');
     }
 
     public function login(Request $request)
@@ -37,6 +45,32 @@ class AuthController extends Controller
         $request->session()->regenerate();
 
         return redirect()->intended(route('dashboard'));
+    }
+    
+    public function register(Request $request)
+    {
+        $validated = $request->validate([
+            'name'                  => ['required', 'string', 'max:100'],
+            'username'              => ['required', 'string', 'max:50', 'unique:users,username'],
+            'password'              => ['required', 'string', 'min:6', 'confirmed'],
+            'password_confirmation' => ['required'],
+        ]);
+
+        // Create new user with default role 'penerima'
+        $user = User::create([
+            'name'     => $validated['name'],
+            'username' => $validated['username'],
+            'password' => Hash::make($validated['password']),
+            'role'     => 'penerima',           // Default role as requested
+        ]);
+
+        // Automatically log in the user after registration
+        Auth::login($user);
+
+        $request->session()->regenerate();
+
+        return redirect()->route('dashboard')
+            ->with('success', 'Akun berhasil dibuat! Selamat datang.');
     }
 
     public function dashboard()

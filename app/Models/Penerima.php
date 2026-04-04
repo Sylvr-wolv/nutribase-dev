@@ -42,4 +42,9 @@ class Penerima extends Model
     {
         return $this->hasMany(Feedback::class, 'penerima_id');
     }
+
+    public function getNamaAttribute(): string
+    {
+        return $this->user->name ?? '';
+    }
 }

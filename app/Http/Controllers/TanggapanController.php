@@ -7,11 +7,32 @@ use Illuminate\Http\Request;
 
 class TanggapanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny', Tanggapan::class);
 
-        return response()->json(Tanggapan::with(['feedback', 'user'])->latest()->paginate(10));
+        $query = Tanggapan::with(['feedback.penerima.user', 'feedback.distribusi', 'user'])->latest();
+
+        // Penerima only sees tanggapans on their own feedback
+        if ($request->user()->isPenerima()) {
+            $query->whereHas('feedback.penerima', fn($q) => $q->where('user_id', $request->user()->id));
+        }
+
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('isi_tanggapan', 'like', "%{$search}%")
+                  ->orWhereHas('user', fn($r) => $r->where('name', 'like', "%{$search}%"));
+            });
+        }
+
+        $tanggapans = $query->paginate(10)->withQueryString();
+
+        $stats = [
+            'total'      => Tanggapan::count(),
+            'milik_saya' => Tanggapan::where('user_id', $request->user()->id)->count(),
+        ];
+
+        return view('tanggapan.index', compact('tanggapans', 'stats'));
     }
 
     public function store(Request $request)
@@ -19,21 +40,15 @@ class TanggapanController extends Controller
         $this->authorize('create', Tanggapan::class);
 
         $validated = $request->validate([
-            'feedback_id' => ['required', 'exists:feedback,id'],
-            'isi_tanggapan' => ['required', 'string'],
+            'feedback_id'    => ['required', 'exists:feedback,id'],
+            'isi_tanggapan'  => ['required', 'string', 'max:2000'],
         ]);
 
         $validated['user_id'] = $request->user()->id;
-        $tanggapan = Tanggapan::create($validated);
 
-        return response()->json($tanggapan, 201);
-    }
+        Tanggapan::create($validated);
 
-    public function show(Tanggapan $tanggapan)
-    {
-        $this->authorize('view', $tanggapan);
-
-        return response()->json($tanggapan->load(['feedback', 'user']));
+        return redirect()->route('feedback.index')->with('success', 'Tanggapan berhasil dikirim.');
     }
 
     public function update(Request $request, Tanggapan $tanggapan)
@@ -41,12 +56,12 @@ class TanggapanController extends Controller
         $this->authorize('update', $tanggapan);
 
         $validated = $request->validate([
-            'isi_tanggapan' => ['required', 'string'],
+            'isi_tanggapan' => ['required', 'string', 'max:2000'],
         ]);
 
         $tanggapan->update($validated);
 
-        return response()->json($tanggapan->fresh());
+        return redirect()->route('tanggapan.index')->with('success', 'Tanggapan berhasil diperbarui.');
     }
 
     public function destroy(Tanggapan $tanggapan)
@@ -55,6 +70,6 @@ class TanggapanController extends Controller
 
         $tanggapan->delete();
 
-        return response()->json(['message' => 'Tanggapan deleted']);
+        return redirect()->route('tanggapan.index')->with('success', 'Tanggapan berhasil dihapus.');
     }
 }
