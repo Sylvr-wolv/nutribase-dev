@@ -146,10 +146,6 @@
                class="nb-nav-item {{ navActive('feedback.*') ? 'active' : '' }}">
                 <i class="bi bi-chat-square-text-fill nb-nav-icon"></i> Ulasan
             </a>
-            <a href="{{ route('tanggapan.index') }}" @click="sidebarOpen=false"
-               class="nb-nav-item {{ navActive('tanggapan.*') ? 'active' : '' }}">
-                <i class="bi bi-reply-all-fill nb-nav-icon"></i> Tanggapan
-            </a>
 
         {{-- ── KOORDINATOR ── --}}
         @elseif($role === 'koordinator')
@@ -162,26 +158,9 @@
             </a>
 
             <p class="nb-section-label">Laporan</p>
-
-            <a href="{{ route('laporan.distribusi') }}" @click="sidebarOpen=false"
-               class="nb-nav-item {{ navActive('laporan.distribusi') ? 'active' : '' }}">
-                <i class="bi bi-graph-up-arrow nb-nav-icon"></i> Distribusi
-            </a>
-            <a href="{{ route('laporan.penerima') }}" @click="sidebarOpen=false"
-               class="nb-nav-item {{ navActive('laporan.penerima') ? 'active' : '' }}">
-                <i class="bi bi-person-vcard nb-nav-icon"></i> Penerima
-            </a>
-            <a href="{{ route('laporan.menu') }}" @click="sidebarOpen=false"
-               class="nb-nav-item {{ navActive('laporan.menu') ? 'active' : '' }}">
-                <i class="bi bi-cup-hot-fill nb-nav-icon"></i> Menu
-            </a>
-            <a href="{{ route('laporan.jadwal') }}" @click="sidebarOpen=false"
-               class="nb-nav-item {{ navActive('laporan.jadwal') ? 'active' : '' }}">
-                <i class="bi bi-calendar3 nb-nav-icon"></i> Jadwal
-            </a>
-            <a href="{{ route('laporan.users') }}" @click="sidebarOpen=false"
-               class="nb-nav-item {{ navActive('laporan.users') ? 'active' : '' }}">
-                <i class="bi bi-people nb-nav-icon"></i> Pengguna
+            <a href="{{ route('laporan.index') }}" @click="sidebarOpen=false"
+            class="nb-nav-item {{ navActive('laporan.*') ? 'active' : '' }}">
+                <i class="bi bi-graph-up-arrow nb-nav-icon"></i> Laporan
             </a>
 
             <p class="nb-section-label">Feedback</p>
@@ -190,10 +169,6 @@
                class="nb-nav-item {{ navActive('feedback.*') ? 'active' : '' }}">
                 <i class="bi bi-chat-left-text-fill nb-nav-icon"></i> Ulasan
             </a>
-            <a href="{{ route('tanggapan.index') }}" @click="sidebarOpen=false"
-               class="nb-nav-item {{ navActive('tanggapan.*') ? 'active' : '' }}">
-                <i class="bi bi-reply-all-fill nb-nav-icon"></i> Tanggapan
-            </a>
 
         {{-- ── PENERIMA ── --}}
         @elseif($role === 'penerima')
@@ -201,30 +176,22 @@
             <p class="nb-section-label" style="margin-top:10px;">Utama</p>
 
             <a href="{{ route('dashboard') }}" @click="sidebarOpen=false"
-               class="nb-nav-item {{ navActive('dashboard') ? 'active' : '' }}">
+            class="nb-nav-item {{ navActive('dashboard') ? 'active' : '' }}">
                 <i class="bi bi-grid-1x2-fill nb-nav-icon"></i> Dashboard
             </a>
 
             <p class="nb-section-label">Riwayat Bantuan</p>
 
             <a href="{{ route('riwayat') }}" @click="sidebarOpen=false"
-               class="nb-nav-item {{ navActive('riwayat') ? 'active' : '' }}">
-                <i class="bi bi-clock-history nb-nav-icon"></i> Distribusi
-            </a>
-            <a href="{{ route('menu') }}" @click="sidebarOpen=false"
-               class="nb-nav-item {{ navActive('menu') ? 'active' : '' }}">
-                <i class="bi bi-egg-fried nb-nav-icon"></i> Menu
+            class="nb-nav-item {{ navActive('riwayat') ? 'active' : '' }}">
+                <i class="bi bi-clock-history nb-nav-icon"></i> Riwayat Distribusi
             </a>
 
             <p class="nb-section-label">Feedback</p>
 
             <a href="{{ route('feedback.index') }}" @click="sidebarOpen=false"
-               class="nb-nav-item {{ navActive('feedback.*') ? 'active' : '' }}">
+            class="nb-nav-item {{ navActive('feedback.*') ? 'active' : '' }}">
                 <i class="bi bi-star-fill nb-nav-icon"></i> Ulasan Saya
-            </a>
-            <a href="{{ route('tanggapan.index') }}" @click="sidebarOpen=false"
-               class="nb-nav-item {{ navActive('tanggapan.*') ? 'active' : '' }}">
-                <i class="bi bi-chat-dots-fill nb-nav-icon"></i> Tanggapan
             </a>
 
         @endif

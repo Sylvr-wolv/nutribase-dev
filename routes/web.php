@@ -9,14 +9,16 @@ use App\Http\Controllers\TanggapanController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-
+use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\RiwayatController;
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
 | Public
 |--------------------------------------------------------------------------
 */
-
+  
 Route::get('/', [AuthController::class, 'home'])->name('home');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -43,7 +45,7 @@ Route::middleware('guest')->group(function () {
 */
 
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [UserController::class, 'editProfile'])->name('profile.show');
     Route::put('/profile', [UserController::class, 'updateProfile'])->name('profile.update');
 
@@ -55,17 +57,18 @@ Route::middleware('auth')->group(function () {
     Route::resource('feedback', FeedbackController::class);
     Route::resource('tanggapan', TanggapanController::class)->except(['create', 'edit']);
 
-
-    Route::get('laporan/distribusi', [DistribusiController::class, 'index'])->name('laporan.distribusi');
-    Route::get('laporan/penerima', [PenerimaController::class, 'index'])->name('laporan.penerima');
-    Route::get('laporan/menu', [MenuController::class, 'index'])->name('laporan.menu');
-    Route::get('laporan/jadwal', [JadwalController::class, 'index'])->name('laporan.jadwal');
-    Route::get('laporan/users', [UserController::class, 'index'])->name('laporan.users');
     Route::resource('feedback', FeedbackController::class)->only(['index', 'show']);
     Route::resource('tanggapan', TanggapanController::class)->except(['create', 'edit']);
 
-    Route::get('riwayat', [DistribusiController::class, 'index'])->name('riwayat');
+    // Riwayat
+    Route::get('riwayat', [RiwayatController::class, 'index'])->name('riwayat');
+
+
     Route::get('menu-bantuan', [MenuController::class, 'index'])->name('menu');
     Route::resource('feedback', FeedbackController::class)->only(['index', 'store', 'show']);
     Route::resource('tanggapan', TanggapanController::class)->only(['index', 'show']);
+
+    // laporan
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/download', [LaporanController::class, 'download'])->name('laporan.download');
 });

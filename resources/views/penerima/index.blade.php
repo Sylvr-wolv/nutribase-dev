@@ -97,31 +97,8 @@
                 </div>
             @endif
 
-            {{-- Stats --}}
-            {{-- @php $total = max($stats['total'], 1); @endphp
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-6">
-                @foreach([
-                    ['label' => 'Ibu Hamil', 'val' => $stats['ibu_hamil'],    'pct' => round($stats['ibu_hamil']/$total*100)],
-                    ['label' => 'Menyusui',  'val' => $stats['ibu_menyusui'], 'pct' => round($stats['ibu_menyusui']/$total*100)],
-                    ['label' => 'Balita',    'val' => $stats['balita'],       'pct' => round($stats['balita']/$total*100)],
-                    ['label' => 'Lainnya',   'val' => $stats['lainnya'],      'pct' => round($stats['lainnya']/$total*100)],
-                ] as $s)
-                    <div class="bg-white border border-[#DFF0E5] rounded-2xl p-4">
-                        <div class="text-[10px] font-bold uppercase tracking-widest text-[#8A9E90]">{{ $s['label'] }}</div>
-                        <div class="text-3xl font-bold text-[#4E6F5C] mt-1.5">{{ $s['val'] }}</div>
-                        <div class="h-1 bg-[#DFF0E5] rounded-full mt-4 overflow-hidden">
-                            <div class="h-full bg-[#79C80E] rounded-full" style="width:{{ $s['pct'] }}%"></div>
-                        </div>
-                    </div>
-                @endforeach
-            </div> --}}
+            @php $indexRoute = route('penerima.index'); @endphp
 
-            {{-- Toolbar --}}
-            @php
-                $indexRoute = auth()->user()->role === 'koordinator'
-                    ? route('koordinator.laporan.penerima')
-                    : route('penerima.index');
-            @endphp
             <form method="GET" action="{{ $indexRoute }}" class="mb-5">
                 <div class="bg-white border border-[#DFF0E5] rounded-2xl p-3 flex flex-col sm:flex-row flex-wrap gap-2 items-stretch sm:items-center">
                     <div class="relative flex-1 min-w-0">
@@ -179,13 +156,13 @@
                             </thead>
                             <tbody class="divide-y divide-[#F0F5F2]">
                                 @foreach($penerima as $p)
-                                    @php
-                                        $daysLeft = now()->diffInDays($p->estimasi_durasi, false);
-                                        $estColor = $daysLeft > 30 ? 'text-[#06B13D]' : ($daysLeft > 0 ? 'text-amber-600' : 'text-red-600');
-                                        $estLabel = $daysLeft > 0
-                                            ? $p->estimasi_durasi->format('d M Y') . " ({$daysLeft}h)"
-                                            : $p->estimasi_durasi->format('d M Y') . ' ✓';
-                                    @endphp
+                                @php
+                                    $daysLeft = (int) now()->diffInDays($p->estimasi_durasi, false);
+                                    $estColor = $daysLeft > 30 ? 'text-[#06B13D]' : ($daysLeft > 0 ? 'text-amber-600' : 'text-red-600');
+                                    $estLabel = $daysLeft > 0
+                                        ? $p->estimasi_durasi->format('d M Y') . " ({$daysLeft} hari)"
+                                        : $p->estimasi_durasi->format('d M Y') . ' ✓';
+                                @endphp
                                     <tr class="hover:bg-[#F7FCF8] transition-colors">
                                         <td class="px-5 py-4">
                                             <div class="flex items-center gap-3">
@@ -199,7 +176,7 @@
                                             </div>
                                         </td>
                                         <td class="px-5 py-4 font-mono text-xs tracking-wider text-[#4E6F5C]">{{ $p->nik }}</td>
-                                        <td class="px-5 py-4 text-[#4E6F5C] font-medium">RT {{ $p->rt }}</td>
+                                        <td class="px-5 py-4 text-[#4E6F5C] font-medium">{{ $p->rt }}</td>
                                         <td class="px-5 py-4">
                                             <span class="inline-flex px-3 py-1 text-xs font-semibold rounded-full whitespace-nowrap
                                                 @if($p->kategori === 'ibu_hamil') bg-amber-100 text-amber-800
@@ -223,7 +200,7 @@
                                         <td class="px-5 py-4">
                                             <div class="flex items-center gap-1.5">
                                                 @if(auth()->user()->role === 'koordinator')
-                                                    <a href="{{ route('koordinator.laporan.penerima.show', $p) }}"
+                                                   <a href="{{ route('penerima.show', $p) }}"
                                                        class="px-3 py-1.5 text-xs font-semibold border border-[#C9DED0] hover:bg-[#D7F487] hover:border-[#79C80E] text-[#4E6F5C] rounded-lg transition flex items-center gap-1">
                                                         <i class="bi bi-eye"></i> Detail
                                                     </a>
@@ -322,7 +299,7 @@
 
                                 <div class="flex items-center gap-2 pt-2.5 border-t border-[#F0F5F2]">
                                     @if(auth()->user()->role === 'koordinator')
-                                        <a href="{{ route('koordinator.laporan.penerima.show', $p) }}"
+                                        <a href="{{ route('penerima.show', $p) }}"
                                            class="flex-1 py-2 text-xs font-semibold text-center border border-[#C9DED0] hover:bg-[#D7F487] text-[#4E6F5C] rounded-xl transition flex items-center justify-center gap-1.5">
                                             <i class="bi bi-eye"></i> Detail
                                         </a>

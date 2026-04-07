@@ -45,7 +45,7 @@
                     <i class="bi bi-arrow-left text-xs"></i> Kembali
                 </a>
                 @if(auth()->user()->role === 'kader')
-                    <a href="{{ route('enu.index') }}"
+                    <a href="{{ route('menu.index') }}"
                        class="inline-flex items-center gap-2 px-4 py-2 border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-700 text-sm font-semibold rounded-xl transition">
                         <i class="bi bi-pencil text-xs"></i> Edit
                     </a>

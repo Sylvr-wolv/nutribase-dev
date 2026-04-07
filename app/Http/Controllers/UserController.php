@@ -44,12 +44,13 @@ class UserController extends Controller
     {
         $this->authorize('viewAny', User::class);
 
-        $query = User::latest();
+        $query = User::where('id', '!=', auth()->id()) // 👈 ini kuncinya
+                    ->latest();
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('username', 'like', "%{$search}%");
+                ->orWhere('username', 'like', "%{$search}%");
             });
         }
 
@@ -60,10 +61,10 @@ class UserController extends Controller
         $users = $query->paginate(10)->withQueryString();
 
         $stats = [
-            'total'       => User::count(),
-            'penerima'    => User::where('role', 'penerima')->count(),
-            'kader'       => User::where('role', 'kader')->count(),
-            'koordinator' => User::where('role', 'koordinator')->count(),
+            'total'       => User::where('id', '!=', auth()->id())->count(),
+            'penerima'    => User::where('role', 'penerima')->where('id', '!=', auth()->id())->count(),
+            'kader'       => User::where('role', 'kader')->where('id', '!=', auth()->id())->count(),
+            'koordinator' => User::where('role', 'koordinator')->where('id', '!=', auth()->id())->count(),
         ];
 
         return view('users.index', compact('users', 'stats'));

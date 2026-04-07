@@ -69,90 +69,145 @@
             </div>
 
             {{-- Search + Filter --}}
-            <div class="bg-white rounded-2xl shadow px-4 sm:px-6 py-4 mb-4 flex flex-col gap-3">
-                <div class="flex gap-2">
-                    <div class="relative flex-1">
-                        <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                            <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z"/>
-                            </svg>
-                        </div>
-                        <input type="text" x-model="searchQuery" @keydown.enter="submitSearch()"
-                            placeholder="Cari menu, kader, atau keterangan..."
-                            class="w-full bg-gray-100 rounded-xl pl-9 pr-9 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 transition"
-                            style="focus:ring-color:#06B13D">
-                        <button x-show="searchQuery" @click="searchQuery = ''; submitSearch()"
-                            class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600 transition">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
-                        </button>
-                    </div>
-                    <button @click="submitSearch()"
-                        class="text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 whitespace-nowrap"
-                        style="background:#06B13D">
-                        Cari
-                    </button>
-                </div>
+            {{-- Search + Filter --}}
+<div class="bg-white rounded-2xl shadow px-4 sm:px-6 py-4 mb-4" x-data="{ filterOpen: false }">
 
-                <div class="flex flex-col sm:flex-row gap-3 flex-wrap items-end">
-                    {{-- Filter RT --}}
-                    <div class="flex flex-col gap-1 flex-1 min-w-[160px]">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Filter RT</label>
-                        <div class="relative">
-                            <select x-model="filterRt" @change="submitSearch()"
-                                class="w-full appearance-none bg-gray-100 rounded-xl px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-300 transition cursor-pointer pr-8">
-                                <option value="">Semua RT</option>
-                                @foreach($rtList as $rt)
-                                    <option value="{{ $rt }}" {{ request('rt') === $rt ? 'selected' : '' }}>{{ $rt }}</option>
-                                @endforeach
-                            </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-2.5 flex items-center">
-                                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
+    {{-- Search row --}}
+    <div class="flex gap-2">
+        <div class="relative flex-1">
+            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 105 11a6 6 0 0012 0z"/>
+                </svg>
+            </div>
+            <input type="text" x-model="searchQuery" @keydown.enter="submitSearch()"
+                placeholder="Cari menu, kader, atau keterangan..."
+                class="w-full bg-gray-100 rounded-xl pl-9 pr-9 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-300 transition">
+            <button x-show="searchQuery" @click="searchQuery = ''; submitSearch()"
+                class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600 transition">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
 
-                    {{-- Filter Tanggal --}}
-                    <div class="flex flex-col gap-1 min-w-[220px]">
-                        <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Rentang Tanggal</label>
-                        <div class="flex items-center gap-2">
-                            <input type="date" x-model="filterDateFrom" @change="submitSearch()"
-                                class="flex-1 bg-gray-100 rounded-xl px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-300 transition">
-                            <span class="text-gray-400 text-xs font-medium flex-shrink-0">s/d</span>
-                            <input type="date" x-model="filterDateTo" @change="submitSearch()"
-                                class="flex-1 bg-gray-100 rounded-xl px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-300 transition">
-                        </div>
-                    </div>
+        {{-- Filter toggle --}}
+        <button @click="filterOpen = !filterOpen"
+            class="relative w-10 h-10 flex items-center justify-center rounded-xl border-2 transition flex-shrink-0"
+            :class="filterOpen
+                ? 'border-green-400 bg-green-50 text-green-600'
+                : 'border-gray-200 bg-gray-100 text-gray-500 hover:border-gray-300'">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/>
+            </svg>
+            @if(request('rt') || request('date_from') || request('date_to'))
+            <span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full border-2 border-white" style="background:#06B13D"></span>
+            @endif
+        </button>
 
-                    {{-- Active chips + Reset --}}
-                    <div class="flex items-center gap-2 flex-wrap self-end">
-                        @if(request('search'))
-                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full"
-                              style="background:#D7F487;color:#4E6F5C">
-                            "{{ request('search') }}"
-                        </span>
-                        @endif
-                        @if(request('rt'))
-                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full"
-                              style="background:#D7F487;color:#4E6F5C">
-                            {{ request('rt') }}
-                        </span>
-                        @endif
-                        @if(request('search') || request('rt') || request('date_from') || request('date_to'))
-                        <a href="{{ route('jadwal.index') }}"
-                           class="flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-red-500 bg-gray-100 hover:bg-red-50 px-3 py-2 rounded-xl transition-all duration-150 whitespace-nowrap">
-                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
-                            Reset
-                        </a>
-                        @endif
-                    </div>
+        <button @click="submitSearch()"
+            class="text-white px-5 py-2.5 rounded-xl text-sm font-medium transition whitespace-nowrap"
+            style="background:#06B13D">Cari</button>
+    </div>
+
+    {{-- Active filter chips --}}
+    @if(request('rt') || request('date_from') || request('date_to'))
+    <div class="flex items-center gap-2 flex-wrap mt-2.5">
+        @if(request('rt'))
+        <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full"
+              style="background:#D7F487;color:#4E6F5C">
+            <i class="bi bi-funnel-fill text-[10px]"></i>
+            {{ request('rt') }}
+        </span>
+        @endif
+        @if(request('date_from') || request('date_to'))
+        <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full"
+              style="background:#D7F487;color:#4E6F5C">
+            <i class="bi bi-calendar3 text-[10px]"></i>
+            {{ request('date_from') ? \Carbon\Carbon::parse(request('date_from'))->format('d M') : '...' }}
+            –
+            {{ request('date_to') ? \Carbon\Carbon::parse(request('date_to'))->format('d M Y') : '...' }}
+        </span>
+        @endif
+    </div>
+    @endif
+
+    {{-- Collapsible filter panel --}}
+    <div x-show="filterOpen"
+         x-transition:enter="transition ease-out duration-150"
+         x-transition:enter-start="opacity-0 -translate-y-1"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-100"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 -translate-y-1"
+         class="mt-3 pt-3 border-t border-gray-100 flex flex-col sm:flex-row gap-3 flex-wrap items-end"
+         style="display:none">
+
+        {{-- Filter RT --}}
+        <div class="flex flex-col gap-1 min-w-[160px]">
+            <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Filter RT</label>
+            <div class="relative">
+                <select x-model="filterRt" @change="submitSearch()"
+                    class="w-full appearance-none bg-gray-100 rounded-xl px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-300 transition cursor-pointer pr-8">
+                    <option value="">Semua RT</option>
+                    @foreach($rtList as $rt)
+                        <option value="{{ $rt }}" {{ request('rt') === $rt ? 'selected' : '' }}>{{ $rt }}</option>
+                    @endforeach
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-2.5 flex items-center">
+                    <svg class="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                 </div>
             </div>
+        </div>
+
+        {{-- Filter Tanggal --}}
+        <div class="flex flex-col gap-1 flex-1 min-w-[220px]">
+            <label class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Rentang Tanggal</label>
+            <div class="flex items-center gap-2">
+                <input type="text" x-model="filterDateFrom"
+                    x-init="flatpickr($el, {
+                        locale: 'id',
+                        dateFormat: 'Y-m-d',
+                        altInput: true,
+                        altFormat: 'd M Y',
+                        defaultDate: filterDateFrom || null,
+                        onChange: (d, str) => {
+                            filterDateFrom = str;
+                            if (filterDateFrom && filterDateTo) submitSearch();
+                        }
+                    })"
+                    placeholder="Tanggal dari"
+                    class="flex-1 bg-gray-100 rounded-xl px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-300 transition">
+                <span class="text-gray-400 text-xs font-medium flex-shrink-0">s/d</span>
+                <input type="text" x-model="filterDateTo"
+                    x-init="flatpickr($el, {
+                        locale: 'id',
+                        dateFormat: 'Y-m-d',
+                        altInput: true,
+                        altFormat: 'd M Y',
+                        defaultDate: filterDateTo || null,
+                        onChange: (d, str) => {
+                            filterDateTo = str;
+                            if (filterDateFrom && filterDateTo) submitSearch();
+                        }
+                    })"
+                    placeholder="Tanggal sampai"
+                    class="flex-1 bg-gray-100 rounded-xl px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-300 transition">
+            </div>
+        </div>
+
+        {{-- Reset --}}
+        @if(request('search') || request('rt') || request('date_from') || request('date_to'))
+        <a href="{{ route('jadwal.index') }}"
+           class="flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-red-500 bg-gray-100 hover:bg-red-50 px-3 py-2.5 rounded-xl transition whitespace-nowrap">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+            Reset Filter
+        </a>
+        @endif
+    </div>
+</div>
 
             {{-- Result count --}}
             @if(request('search') || request('rt'))

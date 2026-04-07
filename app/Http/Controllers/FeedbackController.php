@@ -12,7 +12,7 @@ class FeedbackController extends Controller
     {
         $this->authorize('viewAny', Feedback::class);
 
-        $query = Feedback::with(['distribusi.menu', 'penerima.user', 'tanggapans.user'])->latest();
+        $query = Feedback::with(['distribusi.menu', 'penerima.user', 'tanggapans'])->latest();
 
         if ($request->user()->isPenerima()) {
             $query->whereHas('penerima', fn($q) => $q->where('user_id', $request->user()->id));
@@ -38,19 +38,17 @@ class FeedbackController extends Controller
 
         $feedbacks = $query->paginate(10)->withQueryString();
 
-        // Stats
         $statsQuery = Feedback::query();
         if ($request->user()->isPenerima()) {
             $statsQuery->whereHas('penerima', fn($q) => $q->where('user_id', $request->user()->id));
         }
         $stats = [
-            'total'             => $statsQuery->count(),
-            'avg_rating'        => $statsQuery->avg('rating') ?? 0,
-            'ditanggapi'        => (clone $statsQuery)->has('tanggapans')->count(),
-            'belum_ditanggapi'  => (clone $statsQuery)->doesntHave('tanggapans')->count(),
+            'total'            => $statsQuery->count(),
+            'avg_rating'       => $statsQuery->avg('rating') ?? 0,
+            'ditanggapi'       => (clone $statsQuery)->has('tanggapans')->count(),
+            'belum_ditanggapi' => (clone $statsQuery)->doesntHave('tanggapans')->count(),
         ];
 
-        // Distribusi list for create form (penerima: only their own diterima distribusi without feedback yet)
         $distribusiList = collect();
         if ($request->user()->isPenerima()) {
             $penerima = $request->user()->penerimaProfile;
@@ -68,6 +66,19 @@ class FeedbackController extends Controller
         return view('feedback.index', compact('feedbacks', 'stats', 'distribusiList'));
     }
 
+    public function show(Feedback $feedback)
+    {
+        $this->authorize('view', $feedback);
+
+        $feedback->load([
+            'distribusi.menu',
+            'penerima.user',
+            'tanggapans.user',
+        ]);
+
+        return view('feedback.show', compact('feedback'));
+    }
+
     public function store(Request $request)
     {
         $this->authorize('create', Feedback::class);
@@ -79,9 +90,9 @@ class FeedbackController extends Controller
             'isi_ulasan'    => ['nullable', 'string', 'max:2000'],
         ]);
 
-        Feedback::create($validated);
+        $feedback = Feedback::create($validated);
 
-        return redirect()->route('feedback.index')->with('success', 'Ulasan berhasil disimpan.');
+        return redirect()->route('feedback.show', $feedback)->with('success', 'Ulasan berhasil disimpan.');
     }
 
     public function update(Request $request, Feedback $feedback)
@@ -95,7 +106,7 @@ class FeedbackController extends Controller
 
         $feedback->update($validated);
 
-        return redirect()->route('feedback.index')->with('success', 'Ulasan berhasil diperbarui.');
+        return redirect()->route('feedback.show', $feedback)->with('success', 'Ulasan berhasil diperbarui.');
     }
 
     public function destroy(Feedback $feedback)

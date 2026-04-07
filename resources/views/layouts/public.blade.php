@@ -50,10 +50,14 @@
                class="{{ request()->routeIs('tentang') ? 'text-primary' : 'text-gray-600' }}">
                Tentang
             </a>
-
             <a href="{{ route('kontak') }}"
-               class="bg-primary text-white px-4 py-2 rounded-lg">
+               class="{{ request()->routeIs('kontak') ? 'text-primary' : 'text-gray-600' }}">
                Kontak
+            </a>
+
+            <a href="{{ route('login') }}"
+               class="bg-primary text-white px-4 py-2 rounded-lg">
+               Masuk
             </a>
         </div>
     </div>
