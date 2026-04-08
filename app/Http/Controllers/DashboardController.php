@@ -149,7 +149,20 @@ class DashboardController extends Controller
     {
         $penerima = $user->penerimaProfile;
 
-        abort_if(! $penerima, 403, 'Profil penerima belum dibuat.');
+        if (! $penerima) {
+            return view('dashboard.penerima', [
+                'penerima'         => null,
+                'totalDistribusi'  => 0,
+                'diterima'         => 0,
+                'pending'          => 0,
+                'gagal'            => 0,
+                'latestDistribusi' => collect(),
+                'upcomingJadwal'   => collect(),
+                'totalFeedback'    => 0,
+                'avgRating'        => 0,
+                'daysLeft'         => 0,
+            ]);
+        }
 
         $penerima->load('user');
 
