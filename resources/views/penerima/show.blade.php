@@ -1,4 +1,3 @@
-{{-- resources/views/penerima/show.blade.php --}}
 @extends('layouts.app')
 
 @section('title', 'Detail Penerima — ' . ($penerima->user->name ?? ''))

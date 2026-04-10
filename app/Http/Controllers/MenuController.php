@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Menu;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class MenuController extends Controller
 {
@@ -24,9 +25,9 @@ class MenuController extends Controller
         $menu = $query->paginate(12)->withQueryString();
 
         $stats = [
-            'total'      => Menu::count(),
-            'stok_total' => Menu::sum('stok'),
-            'stok_habis' => Menu::where('stok', 0)->count(),
+            'total'        => Menu::count(),
+            'stok_total'   => Menu::sum('stok'),
+            'stok_habis'   => Menu::where('stok', 0)->count(),
             'stok_sedikit' => Menu::where('stok', '>', 0)->where('stok', '<=', 10)->count(),
         ];
 
@@ -47,9 +48,14 @@ class MenuController extends Controller
             'nama_menu' => ['required', 'string', 'max:150'],
             'deskripsi' => ['nullable', 'string'],
             'stok'      => ['required', 'integer', 'min:0'],
+            'gambar'    => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
 
         $validated['kader_id'] = $request->user()->id;
+
+        if ($request->hasFile('gambar')) {
+            $validated['gambar'] = $request->file('gambar')->store('menu', 'public');
+        }
 
         Menu::create($validated);
 
@@ -60,9 +66,7 @@ class MenuController extends Controller
     public function show(Menu $menu)
     {
         $this->authorize('view', $menu);
-
         $menu->load(['kader', 'jadwals', 'distribusis']);
-
         return view('menu.show', compact('menu'));
     }
 
@@ -77,11 +81,26 @@ class MenuController extends Controller
         $this->authorize('update', $menu);
 
         $validated = $request->validate([
-            'nama_menu' => ['sometimes', 'string', 'max:150'],
-            'deskripsi' => ['nullable', 'string'],
-            'stok'      => ['sometimes', 'integer', 'min:0'],
+            'nama_menu'    => ['sometimes', 'string', 'max:150'],
+            'deskripsi'    => ['nullable', 'string'],
+            'stok'         => ['sometimes', 'integer', 'min:0'],
+            'gambar'       => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'hapus_gambar' => ['nullable', 'boolean'],
         ]);
 
+        // Delete old image if new one uploaded or checkbox checked
+        if ($request->hasFile('gambar') || $request->boolean('hapus_gambar')) {
+            if ($menu->gambar) {
+                Storage::disk('public')->delete($menu->gambar);
+            }
+            $validated['gambar'] = null;
+        }
+
+        if ($request->hasFile('gambar')) {
+            $validated['gambar'] = $request->file('gambar')->store('menu', 'public');
+        }
+
+        unset($validated['hapus_gambar']);
         $menu->update($validated);
 
         return redirect()->route('menu.index')
@@ -91,6 +110,10 @@ class MenuController extends Controller
     public function destroy(Menu $menu)
     {
         $this->authorize('delete', $menu);
+
+        if ($menu->gambar) {
+            Storage::disk('public')->delete($menu->gambar);
+        }
 
         $nama = $menu->nama_menu;
         $menu->delete();

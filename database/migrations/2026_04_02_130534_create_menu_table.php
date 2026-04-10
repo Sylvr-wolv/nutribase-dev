@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('kader_id')->constrained('users')->cascadeOnDelete();
             $table->string('nama_menu', 150);
+            $table->string('gambar')->nullable();
             $table->text('deskripsi')->nullable();
             $table->unsignedInteger('stok')->default(0);
             $table->timestamps();

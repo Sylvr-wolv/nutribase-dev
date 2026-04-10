@@ -76,9 +76,24 @@
                     {{-- Card utama --}}
                     <div class="bg-white border border-[#DFF0E5] rounded-2xl overflow-hidden">
                         <div class="h-2 w-full {{ $menu->stok === 0 ? 'bg-red-400' : ($menu->stok <= 10 ? 'bg-amber-400' : 'bg-[#79C80E]') }}"></div>
+                        @if($menu->gambar)
+                            <div class="w-full h-48 overflow-hidden">
+                                <img src="{{ Storage::url($menu->gambar) }}"
+                                    alt="{{ $menu->nama_menu }}"
+                                    class="w-full h-full object-cover">
+                            </div>
+                        @endif
                         <div class="p-5 flex flex-col items-center text-center">
-                            <div class="w-16 h-16 rounded-2xl bg-[#D7F487] flex items-center justify-center mb-4">
-                                <i class="bi bi-egg-fried text-[#4E6F5C] text-3xl"></i>
+                            <div class="w-80 h-80 mb-4">
+                                @if($menu->gambar)
+                                    <img src="{{ Storage::url($menu->gambar) }}"
+                                         alt="{{ $menu->nama_menu }}"
+                                         class="w-full h-full object-cover rounded-2xl border border-[#DFF0E5] shadow-sm">
+                                @else
+                                    <div class="w-full h-full rounded-2xl bg-[#D7F487] flex items-center justify-center">
+                                        <i class="bi bi-egg-fried text-[#4E6F5C] text-3xl"></i>
+                                    </div>
+                                @endif
                             </div>
                             <h1 class="text-lg font-bold text-[#2E3D33] mb-1">{{ $menu->nama_menu }}</h1>
                             <p class="text-xs text-[#8A9E90]">Dibuat oleh {{ $menu->kader->name ?? '—' }}</p>

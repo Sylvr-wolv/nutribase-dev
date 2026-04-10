@@ -24,9 +24,9 @@ class DistribusiController extends Controller
         // Search
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
-                $q->whereHas('penerima', fn($r) => $r->where('nama', 'like', "%{$search}%"))
-                  ->orWhereHas('menu',     fn($r) => $r->where('nama', 'like', "%{$search}%"))
-                  ->orWhereHas('kader',    fn($r) => $r->where('name', 'like', "%{$search}%"));
+                $q->whereHas('penerima.user', fn($r) => $r->where('name', 'like', "%{$search}%"))
+                  ->orWhereHas('menu',        fn($r) => $r->where('nama_menu', 'like', "%{$search}%"))
+                  ->orWhereHas('kader',       fn($r) => $r->where('name', 'like', "%{$search}%"));
             });
         }
 
