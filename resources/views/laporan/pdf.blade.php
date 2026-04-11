@@ -196,7 +196,21 @@
 {{-- ══════════════ HEADER ══════════════ --}}
 <div class="header">
     <div class="header-logo">
-        <div class="logo-pill">N</div>
+        @php
+            $faviconPath = public_path('favicon.png');
+            $faviconExists = file_exists($faviconPath);
+            if ($faviconExists) {
+                $faviconData = base64_encode(file_get_contents($faviconPath));
+                $faviconMime = mime_content_type($faviconPath);
+            }
+        @endphp
+
+        @if($faviconExists)
+            <img src="data:{{ $faviconMime }};base64,{{ $faviconData }}"
+                style="width:44px;height:44px;border-radius:8px;object-fit:contain;">
+        @else
+            <div class="logo-pill">N</div>
+        @endif
     </div>
     <div class="header-text">
         <h1>NutriBase</h1>
@@ -288,7 +302,21 @@
 {{-- ══════════════ HEADER REPEAT ══════════════ --}}
 <div class="header">
     <div class="header-logo">
-        <div class="logo-pill">N</div>
+        @php
+            $faviconPath = public_path('favicon.png');
+            $faviconExists = file_exists($faviconPath);
+            if ($faviconExists) {
+                $faviconData = base64_encode(file_get_contents($faviconPath));
+                $faviconMime = mime_content_type($faviconPath);
+            }
+        @endphp
+
+        @if($faviconExists)
+            <img src="data:{{ $faviconMime }};base64,{{ $faviconData }}"
+                style="width:44px;height:44px;border-radius:8px;object-fit:contain;">
+        @else
+            <div class="logo-pill">N</div>
+        @endif
     </div>
     <div class="header-text">
         <h1>NutriBase</h1>
