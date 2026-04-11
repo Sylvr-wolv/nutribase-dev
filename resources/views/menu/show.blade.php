@@ -24,13 +24,7 @@
 
             {{-- Breadcrumb --}}
             <div class="flex items-center gap-2 text-sm text-[#8A9E90] mb-5">
-                @php
-                    $backRoute = match(auth()->user()->role) {
-                        'koordinator' => route('koordinator.laporan.menu'),
-                        'penerima'    => route('penerima.menu'),
-                        default       => route('menu.index'),
-                    };
-                @endphp
+                @php $backRoute = route('menu.index'); @endphp
                 <a href="{{ $backRoute }}" class="text-[#4E6F5C] font-medium hover:text-[#06B13D] transition">
                     <i class="bi bi-basket2 mr-1"></i>Menu & Stok
                 </a>
@@ -44,19 +38,18 @@
                    class="inline-flex items-center gap-2 px-4 py-2 border border-[#C9DED0] bg-[#F2F8F4] hover:bg-[#D7F487] hover:border-[#79C80E] text-[#4E6F5C] text-sm font-semibold rounded-xl transition">
                     <i class="bi bi-arrow-left text-xs"></i> Kembali
                 </a>
-                @if(auth()->user()->role === 'kader')
-                    <a href="{{ route('menu.index') }}"
-                       class="inline-flex items-center gap-2 px-4 py-2 border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-700 text-sm font-semibold rounded-xl transition">
-                        <i class="bi bi-pencil text-xs"></i> Edit
-                    </a>
-                    <form method="POST" action="{{ route('menu.destroy', $menu) }}"
-                          onsubmit="return confirm('Hapus menu ini?')">
-                        @csrf @method('DELETE')
-                        <button type="submit"
-                            class="inline-flex items-center gap-2 px-4 py-2 border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 text-sm font-semibold rounded-xl transition">
-                            <i class="bi bi-trash text-xs"></i> Hapus
-                        </button>
-                    </form>
+                <a href="{{ route('menu.index') }}"
+                class="inline-flex items-center gap-2 px-4 py-2 border border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-700 text-sm font-semibold rounded-xl transition">
+                    <i class="bi bi-pencil text-xs"></i> Edit
+                </a>
+                <form method="POST" action="{{ route('menu.destroy', $menu) }}"
+                    onsubmit="return confirm('Hapus menu ini?')">
+                    @csrf @method('DELETE')
+                    <button type="submit"
+                        class="inline-flex items-center gap-2 px-4 py-2 border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 text-sm font-semibold rounded-xl transition">
+                        <i class="bi bi-trash text-xs"></i> Hapus
+                    </button>
+                </form>
                 @endif
             </div>
 

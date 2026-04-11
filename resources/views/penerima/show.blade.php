@@ -8,7 +8,7 @@
     <div class="bg-white border-b border-slate-200 px-6 py-5 sticky top-0 z-10">
         <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
             <nav class="flex items-center text-sm font-semibold">
-                @php $indexRoute = auth()->user()->role === 'koordinator' ? 'koordinator.laporan.penerima' : 'penerima.index'; @endphp
+                @php $indexRoute = 'penerima.index'; @endphp
                 <a href="{{ route($indexRoute) }}" class="text-slate-400 hover:text-emerald-600 transition-colors">Penerima</a>
                 <i class="bi bi-chevron-right mx-3 text-slate-300 text-[10px]"></i>
                 <span class="text-slate-900 uppercase tracking-wider text-xs">Detail Profil</span>
@@ -18,11 +18,9 @@
                 <a href="{{ route($indexRoute) }}" class="px-4 py-2 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all shadow-sm">
                     <i class="bi bi-arrow-left mr-2"></i> Kembali
                 </a>
-                @if(auth()->user()->role !== 'koordinator')
                 <a href="{{ route('penerima.edit', $penerima) }}" class="px-4 py-2 text-sm font-bold text-white bg-slate-900 rounded-xl hover:bg-slate-800 transition-all shadow-md">
                     <i class="bi bi-pencil-square mr-2"></i> Edit Data
                 </a>
-                @endif
             </div>
         </div>
     </div>
