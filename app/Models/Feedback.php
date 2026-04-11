@@ -15,6 +15,7 @@ class Feedback extends Model
         'penerima_id',
         'rating',
         'isi_ulasan',
+        'gambar',
     ];
 
     protected $casts = [

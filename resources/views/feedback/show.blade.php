@@ -95,10 +95,28 @@
                 </div>
 
                 {{-- Isi ulasan --}}
-                @if($feedback->isi_ulasan)
-                <p class="text-gray-700 text-sm leading-relaxed">{{ $feedback->isi_ulasan }}</p>
-                @else
-                <p class="text-gray-400 text-sm italic">Tidak ada isi ulasan.</p>
+@if($feedback->isi_ulasan)
+<p class="text-gray-700 text-sm leading-relaxed">{{ $feedback->isi_ulasan }}</p>
+@else
+<p class="text-gray-400 text-sm italic">Tidak ada isi ulasan.</p>
+@endif
+
+                {{-- Gambar --}}
+                @if($feedback->gambar)
+                <div class="mt-4">
+                    <img src="{{ Storage::url($feedback->gambar) }}" alt="Foto ulasan"
+                        class="w-full max-h-72 object-cover rounded-xl border border-gray-100 cursor-pointer"
+                        onclick="this.closest('.img-wrap')?.querySelector('dialog')?.showModal()"
+                        x-data
+                        @click="$refs.lightbox.showModal()">
+                    {{-- Lightbox --}}
+                    <dialog x-ref="lightbox"
+                        class="rounded-2xl shadow-2xl p-0 backdrop:bg-black/70 max-w-3xl w-full"
+                        @click="$el.close()">
+                        <img src="{{ Storage::url($feedback->gambar) }}" alt="Foto ulasan"
+                            class="w-full h-auto rounded-2xl">
+                    </dialog>
+                </div>
                 @endif
 
                 {{-- Actions (edit/delete for penerima owner) --}}
@@ -251,8 +269,9 @@
                 <button @click="open = false" class="text-white/70 hover:text-white transition"><i class="bi bi-x-lg"></i></button>
             </div>
             <form action="{{ route('feedback.update', $feedback->id) }}" method="POST"
-                  class="p-6 space-y-4" x-data="{ editHover: 0, rating: {{ $feedback->rating }} }">
-                @csrf @method('PUT')
+                enctype="multipart/form-data"
+                class="p-6 space-y-4" x-data="{ editHover: 0, rating: {{ $feedback->rating }}, newPreview: null }">
+              @csrf @method('PUT')
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Rating</label>
                     <input type="hidden" name="rating" :value="rating">
@@ -274,8 +293,36 @@
                         class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-400 transition resize-none"
                         >{{ $feedback->isi_ulasan }}</textarea>
                 </div>
+                {{-- Gambar --}}
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-1.5">
+                        Foto <span class="text-gray-300 normal-case font-normal">(opsional)</span>
+                    </label>
+
+                    {{-- Show new preview or existing --}}
+                    <template x-if="newPreview">
+                        <div class="mb-2">
+                            <img :src="newPreview" class="h-24 w-auto rounded-xl object-cover border border-gray-200">
+                            <p class="text-xs text-gray-400 mt-1">Foto baru akan mengganti yang lama.</p>
+                        </div>
+                    </template>
+                    @if($feedback->gambar)
+                    <template x-if="!newPreview">
+                        <div class="mb-2">
+                            <img src="{{ Storage::url($feedback->gambar) }}"
+                                class="h-24 w-auto rounded-xl object-cover border border-gray-200">
+                            <p class="text-xs text-gray-400 mt-1">Unggah foto baru untuk mengganti.</p>
+                        </div>
+                    </template>
+                    @endif
+
+                    <input type="file" name="gambar" accept="image/jpg,image/jpeg,image/png,image/webp"
+                        @change="newPreview = $event.target.files[0] ? URL.createObjectURL($event.target.files[0]) : null"
+                        class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-400 transition file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
+                </div>
+
                 <div class="flex gap-3 pt-1">
-                    <button type="button" @click="open = false"
+                    <button type="button" @click="open = false; newPreview = null"
                         class="flex-1 py-2.5 rounded-xl text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition">Batal</button>
                     <button type="submit"
                         class="flex-1 py-2.5 rounded-xl text-sm font-bold text-white transition"

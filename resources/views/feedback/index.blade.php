@@ -285,9 +285,11 @@
                                 </td>
                                 <td class="pr-4">
                                     @if($f->tanggapans->count() > 0)
-                                    <span class="text-xs px-2.5 py-1 rounded-full font-semibold" style="background:#D7F487;color:#4E6F5C">
+                                    <a href="{{ route('feedback.show', $f->id) }}"
+                                       class="text-xs px-2.5 py-1 rounded-full font-semibold transition hover:opacity-75"
+                                       style="background:#D7F487;color:#4E6F5C">
                                         {{ $f->tanggapans->count() }} tanggapan
-                                    </span>
+                                    </a>
                                     @else
                                     <span class="text-xs px-2.5 py-1 rounded-full font-semibold bg-gray-100 text-gray-400">
                                         Belum ada
@@ -323,6 +325,7 @@
                                                 penerima_id: {{ $f->penerima_id }},
                                                 rating: {{ $f->rating }},
                                                 isi_ulasan: @js($f->isi_ulasan),
+                                                gambar: @js($f->gambar),
                                             };
                                             editModal = true
                                         "
@@ -377,9 +380,11 @@
                             {{ $f->distribusi->menu->nama ?? '-' }}
                         </span>
                         @if($f->tanggapans->count() > 0)
-                        <span class="text-xs px-2.5 py-1 rounded-full font-semibold" style="background:#D7F487;color:#4E6F5C">
+                        <a href="{{ route('feedback.show', $f->id) }}"
+                           class="text-xs px-2.5 py-1 rounded-full font-semibold transition hover:opacity-75"
+                           style="background:#D7F487;color:#4E6F5C">
                             {{ $f->tanggapans->count() }} tanggapan
-                        </span>
+                        </a>
                         @else
                         <span class="text-xs px-2.5 py-1 rounded-full font-semibold bg-gray-100 text-gray-400">Belum ditanggapi</span>
                         @endif
@@ -394,6 +399,7 @@
                                     penerima: '{{ $f->penerima->nama ?? '-' }}',
                                     rating: {{ $f->rating }},
                                     ulasan: @js($f->isi_ulasan),
+                                    gambar: @js($f->gambar),  {{-- ADD THIS --}}
                                     tanggapans: @js($f->tanggapans->map(fn($t) => ['id' => $t->id, 'user' => $t->user->name ?? '-', 'isi' => $t->isi_tanggapan, 'tgl' => $t->created_at->format('d M Y H:i')])),
                                 };
                                 tanggapanModal = true

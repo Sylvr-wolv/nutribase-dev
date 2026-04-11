@@ -18,9 +18,9 @@
             </button>
         </div>
 
-        <form action="{{ route('feedback.store') }}" method="POST"
-              class="p-6 space-y-4 overflow-y-auto flex-1"
-              x-data="{ createRating: 0, hoverRating: 0 }">
+        <form action="{{ route('feedback.store') }}" method="POST" enctype="multipart/form-data"
+            class="p-6 space-y-4 overflow-y-auto flex-1"
+            x-data="{ createRating: 0, hoverRating: 0 }">
             @csrf
 
             {{-- Distribusi --}}
@@ -72,6 +72,15 @@
                     class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-400 transition resize-none"></textarea>
             </div>
 
+            {{-- Gambar --}}
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-1.5">
+                    Foto <span class="text-gray-300 normal-case font-normal">(opsional)</span>
+                </label>
+                <input type="file" name="gambar" accept="image/jpg,image/jpeg,image/png,image/webp"
+                    class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-400 transition file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
+            </div>
+
             <div class="flex gap-3 pt-2">
                 <button type="button" @click="openModal = false"
                     class="flex-1 py-2.5 rounded-xl text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 transition">
@@ -107,9 +116,9 @@
             </button>
         </div>
 
-        <form :action="`/feedback/${editData.id}`" method="POST"
-              class="p-6 space-y-4 overflow-y-auto flex-1"
-              x-data="{ editHover: 0 }">
+        <form :action="`/feedback/${editData.id}`" method="POST" enctype="multipart/form-data"
+            class="p-6 space-y-4 overflow-y-auto flex-1"
+            x-data="{ editHover: 0 }">
             @csrf
             @method('PUT')
 
@@ -141,6 +150,25 @@
                     x-model="editData.isi_ulasan"
                     placeholder="Ceritakan pengalaman Anda..."
                     class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-400 transition resize-none"></textarea>
+            </div>
+
+            {{-- Gambar --}}
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-widest text-gray-400 mb-1.5">
+                    Foto <span class="text-gray-300 normal-case font-normal">(opsional)</span>
+                </label>
+
+                {{-- Preview gambar saat ini --}}
+                <template x-if="editData.gambar">
+                    <div class="mb-2">
+                        <img :src="`/storage/${editData.gambar}`" alt="Foto ulasan"
+                            class="h-24 w-auto rounded-xl object-cover border border-gray-200">
+                        <p class="text-xs text-gray-400 mt-1">Unggah foto baru untuk mengganti.</p>
+                    </div>
+                </template>
+
+                <input type="file" name="gambar" accept="image/jpg,image/jpeg,image/png,image/webp"
+                    class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-400 transition file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
             </div>
 
             <div class="flex gap-3 pt-2">
@@ -191,6 +219,14 @@
                     </div>
                 </div>
                 <p class="text-sm text-gray-600 italic" x-text="tanggapanFeedback.ulasan || 'Tidak ada isi ulasan.'"></p>
+
+                {{-- Gambar feedback --}}
+                <template x-if="tanggapanFeedback.gambar">
+                    <div class="mt-3">
+                        <img :src="`/storage/${tanggapanFeedback.gambar}`" alt="Foto ulasan"
+                            class="w-full max-h-48 object-cover rounded-xl border border-green-100">
+                    </div>
+                </template>
             </div>
 
             {{-- Existing tanggapans --}}

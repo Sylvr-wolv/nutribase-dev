@@ -14,6 +14,7 @@ return new class extends Migration
             $table->foreignId('penerima_id')->constrained('penerima')->cascadeOnDelete();
             $table->unsignedTinyInteger('rating'); // 1-5, validasi di FormRequest
             $table->text('isi_ulasan')->nullable();
+            $table->string('gambar')->nullable();
             $table->timestamps();
         });
     }

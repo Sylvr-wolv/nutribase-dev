@@ -88,7 +88,12 @@ class FeedbackController extends Controller
             'penerima_id'   => ['required', 'exists:penerima,id'],
             'rating'        => ['required', 'integer', 'between:1,5'],
             'isi_ulasan'    => ['nullable', 'string', 'max:2000'],
+            'gambar'        => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
+
+        if ($request->hasFile('gambar')) {
+            $validated['gambar'] = $request->file('gambar')->store('feedback', 'public');
+        }
 
         $feedback = Feedback::create($validated);
 
@@ -102,7 +107,16 @@ class FeedbackController extends Controller
         $validated = $request->validate([
             'rating'     => ['required', 'integer', 'between:1,5'],
             'isi_ulasan' => ['nullable', 'string', 'max:2000'],
+            'gambar'     => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ]);
+
+        if ($request->hasFile('gambar')) {
+            // Delete old image if exists
+            if ($feedback->gambar) {
+                \Storage::disk('public')->delete($feedback->gambar);
+            }
+            $validated['gambar'] = $request->file('gambar')->store('feedback', 'public');
+        }
 
         $feedback->update($validated);
 
@@ -112,6 +126,10 @@ class FeedbackController extends Controller
     public function destroy(Feedback $feedback)
     {
         $this->authorize('delete', $feedback);
+
+        if ($feedback->gambar) {
+            \Storage::disk('public')->delete($feedback->gambar);
+        }
 
         $feedback->delete();
 
