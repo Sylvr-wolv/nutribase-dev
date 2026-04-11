@@ -109,16 +109,18 @@
     <div>
         <label class="block text-xs font-semibold text-[#4E6F5C] uppercase tracking-wide mb-1">Kategori <span class="text-red-500">*</span></label>
         @if($isEdit)
+            {{-- Kategori - edit mode --}}
             <select
-                name="kategori"
-                x-model="kategori"
-                class="w-full px-3 py-2.5 bg-[#FAFCFB] border border-[#CCDFD4] focus:border-[#79C80E] focus:outline-none rounded-xl text-sm"
-                required>
-                <option value="">— Pilih —</option>
-                <option value="ibu_hamil">Ibu Hamil</option>
-                <option value="ibu_menyusui">Ibu Menyusui</option>
-                <option value="balita">Balita</option>
-                <option value="lainnya">Lainnya</option>
+            name="kategori"
+            x-model="kategori"
+            x-effect="kategori = editData.kategori ?? kategori"
+            class="w-full px-3 py-2.5 bg-[#FAFCFB] border border-[#CCDFD4] focus:border-[#79C80E] focus:outline-none rounded-xl text-sm"
+            required>
+            <option value="">— Pilih —</option>
+            <option value="ibu_hamil">Ibu Hamil</option>
+            <option value="ibu_menyusui">Ibu Menyusui</option>
+            <option value="balita">Balita</option>
+            <option value="lainnya">Lainnya</option>
             </select>
         @else
             <select

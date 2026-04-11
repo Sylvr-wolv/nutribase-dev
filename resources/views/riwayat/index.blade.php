@@ -213,7 +213,6 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm text-left">
                         <thead class="text-gray-500 uppercase text-xs border-b">
-                            @if(auth()->user()->role !== 'penerima')
                             <tr>
                                 <th class="py-4 pr-4">No</th>
                                 <th class="pr-4">Tanggal</th>
@@ -224,7 +223,6 @@
                                 <th class="pr-4">Keterangan</th>
                                 <th>Ulasan</th>
                             </tr>
-                            @endif
 
                         </thead>
                         <tbody class="divide-y">

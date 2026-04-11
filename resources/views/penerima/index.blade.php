@@ -6,7 +6,6 @@
 @section('content')
 
 @php
-    // Buka modal otomatis jika ada validation error yang dikembalikan dari store/update
     $autoOpenCreate = session('open_modal') === 'create' || ($errors->any() && old('_method') === null && old('name'));
     $autoOpenEditId = session('open_modal_edit');
 @endphp
@@ -356,114 +355,109 @@
     </main>
 
     {{-- ══════════════════════════════════════════
-         MODAL — Pure Alpine, zero page navigation
+         MODAL — inside root x-data scope
          ══════════════════════════════════════════ --}}
     @if(auth()->user()->role === 'kader')
 
-    <template x-teleport="body">
+    <div
+        x-show="modal !== null"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4"
+        style="display:none;"
+    >
+        {{-- Backdrop --}}
+        <div
+            class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+            @click="closeModal()"
+        ></div>
+
+        {{-- Modal panel --}}
         <div
             x-show="modal !== null"
             x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0"
-            x-transition:enter-end="opacity-100"
+            x-transition:enter-start="opacity-0 scale-95 translate-y-2"
+            x-transition:enter-end="opacity-100 scale-100 translate-y-0"
             x-transition:leave="transition ease-in duration-150"
-            x-transition:leave-start="opacity-100"
-            x-transition:leave-end="opacity-0"
-            class="fixed inset-0 z-50 flex items-center justify-center p-4"
-            style="display:none;"
+            x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+            x-transition:leave-end="opacity-0 scale-95 translate-y-2"
+            class="relative z-10 w-full max-w-lg max-h-[90vh] flex flex-col bg-white rounded-2xl shadow-2xl border border-[#DFF0E5]"
+            @click.stop
         >
-            {{-- Backdrop --}}
-            <div
-                class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
-                @click="closeModal()"
-            ></div>
-
-            {{-- Modal panel --}}
-            <div
-                x-show="modal !== null"
-                x-transition:enter="transition ease-out duration-200"
-                x-transition:enter-start="opacity-0 scale-95 translate-y-2"
-                x-transition:enter-end="opacity-100 scale-100 translate-y-0"
-                x-transition:leave="transition ease-in duration-150"
-                x-transition:leave-start="opacity-100 scale-100 translate-y-0"
-                x-transition:leave-end="opacity-0 scale-95 translate-y-2"
-                class="relative z-10 w-full max-w-lg max-h-[90vh] flex flex-col bg-white rounded-2xl shadow-2xl border border-[#DFF0E5]"
-                @click.stop
-            >
-                {{-- Modal Header --}}
-                <div class="flex items-start justify-between gap-3 px-5 py-4 border-b border-[#F0F5F2] shrink-0">
-                    <div>
-                        <h2 class="text-base font-bold text-[#4E6F5C]" x-text="modal === 'edit' ? 'Edit Penerima' : 'Tambah Penerima'"></h2>
-                        <p class="text-xs text-[#8A9E90] mt-0.5" x-text="modal === 'edit' ? 'Perbarui data penerima bantuan MBG' : 'Akun login dibuat otomatis (password awal = NIK)'"></p>
-                    </div>
-                    <button type="button" @click="closeModal()"
-                        class="p-1.5 rounded-lg text-[#8A9E90] hover:bg-[#F0F5F2] hover:text-[#4E6F5C] transition shrink-0">
-                        <i class="bi bi-x-lg text-sm"></i>
-                    </button>
+            {{-- Modal Header --}}
+            <div class="flex items-start justify-between gap-3 px-5 py-4 border-b border-[#F0F5F2] shrink-0">
+                <div>
+                    <h2 class="text-base font-bold text-[#4E6F5C]" x-text="modal === 'edit' ? 'Edit Penerima' : 'Tambah Penerima'"></h2>
+                    <p class="text-xs text-[#8A9E90] mt-0.5" x-text="modal === 'edit' ? 'Perbarui data penerima bantuan MBG' : 'Akun login dibuat otomatis (password awal = NIK)'"></p>
                 </div>
+                <button type="button" @click="closeModal()"
+                    class="p-1.5 rounded-lg text-[#8A9E90] hover:bg-[#F0F5F2] hover:text-[#4E6F5C] transition shrink-0">
+                    <i class="bi bi-x-lg text-sm"></i>
+                </button>
+            </div>
 
-                {{-- Modal Body --}}
-                <div class="overflow-y-auto flex-1 px-5 py-4">
+            {{-- Modal Body --}}
+            <div class="overflow-y-auto flex-1 px-5 py-4">
 
-                    {{-- Validation errors (hanya tampil jika ada error dan modal terbuka via PHP) --}}
-                    @if($errors->any())
-                    <div class="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs">
-                        <p class="font-semibold mb-1">Periksa kembali isian:</p>
-                        <ul class="list-disc list-inside space-y-0.5">
-                            @foreach($errors->all() as $e)
-                                <li>{{ $e }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    @endif
-
-                    {{-- CREATE FORM --}}
-                    <form
-                        x-show="modal === 'create'"
-                        method="POST"
-                        action="{{ route('penerima.store') }}"
-                        x-data="{ kategori: '' }"
-                    >
-                        @csrf
-                        @include('penerima.form_fields', ['editMode' => false])
-                        <div class="flex gap-2 mt-5 pt-4 border-t border-[#F0F5F2]">
-                            <button type="submit"
-                                class="px-5 py-2.5 bg-[#06B13D] hover:bg-[#059933] text-white text-sm font-semibold rounded-xl flex items-center gap-2 transition">
-                                <i class="bi bi-check-lg"></i> Tambah
-                            </button>
-                            <button type="button" @click="closeModal()"
-                                class="px-4 py-2.5 border border-[#CCDFD4] text-[#4E6F5C] text-sm font-medium rounded-xl hover:bg-[#F2F8F4] transition">
-                                Batal
-                            </button>
-                        </div>
-                    </form>
-
-                    {{-- EDIT FORM --}}
-                    <form
-                        x-show="modal === 'edit'"
-                        method="POST"
-                        :action="`{{ url('kader/penerima') }}/${editId}`"
-                        x-data="{ get kategori() { return $root.kategori; }, set kategori(v) { $root.kategori = v; } }"
-                    >
-                        @csrf
-                        @method('PUT')
-                        @include('penerima.form_fields', ['editMode' => true])
-                        <div class="flex gap-2 mt-5 pt-4 border-t border-[#F0F5F2]">
-                            <button type="submit"
-                                class="px-5 py-2.5 bg-[#06B13D] hover:bg-[#059933] text-white text-sm font-semibold rounded-xl flex items-center gap-2 transition">
-                                <i class="bi bi-check-lg"></i> Simpan
-                            </button>
-                            <button type="button" @click="closeModal()"
-                                class="px-4 py-2.5 border border-[#CCDFD4] text-[#4E6F5C] text-sm font-medium rounded-xl hover:bg-[#F2F8F4] transition">
-                                Batal
-                            </button>   
-                        </div>
-                    </form>
-
+                @if($errors->any())
+                <div class="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs">
+                    <p class="font-semibold mb-1">Periksa kembali isian:</p>
+                    <ul class="list-disc list-inside space-y-0.5">
+                        @foreach($errors->all() as $e)
+                            <li>{{ $e }}</li>
+                        @endforeach
+                    </ul>
                 </div>
+                @endif
+
+                {{-- CREATE FORM --}}
+                <form
+                    x-show="modal === 'create'"
+                    method="POST"
+                    action="{{ route('penerima.store') }}"
+                >
+                    @csrf
+                    @include('penerima.form_fields', ['editMode' => false])
+                    <div class="flex gap-2 mt-5 pt-4 border-t border-[#F0F5F2]">
+                        <button type="submit"
+                            class="px-5 py-2.5 bg-[#06B13D] hover:bg-[#059933] text-white text-sm font-semibold rounded-xl flex items-center gap-2 transition">
+                            <i class="bi bi-check-lg"></i> Tambah
+                        </button>
+                        <button type="button" @click="closeModal()"
+                            class="px-4 py-2.5 border border-[#CCDFD4] text-[#4E6F5C] text-sm font-medium rounded-xl hover:bg-[#F2F8F4] transition">
+                            Batal
+                        </button>
+                    </div>
+                </form>
+
+                {{-- EDIT FORM --}}
+                <form
+                    x-show="modal === 'edit'"
+                    method="POST"
+                    :action="`{{ url('penerima') }}/${editId}`"
+                >
+                    @csrf
+                    @method('PUT')
+                    @include('penerima.form_fields', ['editMode' => true])
+                    <div class="flex gap-2 mt-5 pt-4 border-t border-[#F0F5F2]">
+                        <button type="submit"
+                            class="px-5 py-2.5 bg-[#06B13D] hover:bg-[#059933] text-white text-sm font-semibold rounded-xl flex items-center gap-2 transition">
+                            <i class="bi bi-check-lg"></i> Simpan
+                        </button>
+                        <button type="button" @click="closeModal()"
+                            class="px-4 py-2.5 border border-[#CCDFD4] text-[#4E6F5C] text-sm font-medium rounded-xl hover:bg-[#F2F8F4] transition">
+                            Batal
+                        </button>
+                    </div>
+                </form>
+
             </div>
         </div>
-    </template>
+    </div>
 
     @endif
 

@@ -6,7 +6,6 @@
     @include('layouts.sidebar')
 
     <main class="flex-1 flex flex-col min-w-0 lg:pl-72">
-
         {{-- Mobile Navbar --}}
         <header class="lg:hidden flex items-center justify-between bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-20 shadow-sm">
             <button @click="sidebarOpen = true" style="color:#06B13D">
@@ -83,7 +82,7 @@
                     </div>
                 </div>
                 <div style="height:260px;position:relative">
-                    <canvas id="distribusiChart"></canvas>
+                    <canvas id="distribusiChart" style="display:block;width:100%;height:260px"></canvas>
                 </div>
             </div>
 
@@ -209,7 +208,7 @@
 </div>
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
     const ctx = document.getElementById('distribusiChart').getContext('2d');
     new Chart(ctx, {
